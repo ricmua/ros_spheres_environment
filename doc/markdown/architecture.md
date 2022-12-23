@@ -16,7 +16,7 @@ The system is designed to route commands for manipulating a virtual environment
 from some client interface to a remote server, via [ROS2]. See the system 
 diagram.
 
-![System diagram](assets/images/system_diagram.svg)
+![System diagram](../../assets/images/system_diagram.svg "System diagram")
 
 
 <!---------------------------------------------------------------------
