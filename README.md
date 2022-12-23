@@ -218,6 +218,11 @@ python -m doctest path/to/ros_spheres_environment/README.md
 
 ```
 
+## Design
+
+A diagram and description of the system architecture is provided in the 
+[extended documentation](doc/markdown/architecture.md).
+
 ## License
 
 Copyright 2022 [Neuromechatronics Lab][neuromechatronics], 
