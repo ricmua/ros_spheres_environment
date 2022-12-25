@@ -299,8 +299,23 @@ class Environment(spheres_environment.Environment):
         publisher.publish(message)
         
         # Invoke superclass method with an additional argument.
+        # This argument is passed to the initialized object.
         super().initialize_object(key=key, node=self._node, **kwargs)
-    
+        
+    def destroy_object(self, key):
+        """
+        """
+        
+        # Publish a request that the remote environment destroy an object.
+        publisher = self._publisher_map['destroy']
+        message = spawn_message(data=key)
+        publisher.publish(message)
+        
+        # Invoke superclass method if the item exists.
+        # The check is necessary in case the local virtual environment does 
+        # not exactly match the remote environment.
+        if key in self: super().destroy_object(key=key)
+        
     def __del__(self):
         """ Destructor. """
         #self._destroy_publishers()
