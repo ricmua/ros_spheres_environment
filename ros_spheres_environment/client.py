@@ -300,7 +300,7 @@ class Environment(spheres_environment.Environment):
         
         # Invoke superclass method with an additional argument.
         # This argument is passed to the initialized object.
-        super().initialize_object(key=key, node=self._node, **kwargs)
+        return super().initialize_object(key=key, node=self._node, **kwargs)
         
     def destroy_object(self, key):
         """
