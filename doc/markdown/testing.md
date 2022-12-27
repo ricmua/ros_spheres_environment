@@ -44,8 +44,8 @@ See the [ROS2 Python testing] documentation for further information.
 ### README.md
 
 As an alternative, the [pytest] framework can be directly invoked to verify 
-that the package is functioning as expected, by running the doctests in this 
-README.
+that the package is functioning as expected -- for example, by running the 
+doctests in this README.
 
 ```bash
 python -m doctest path/to/ros_spheres_environment/README.md

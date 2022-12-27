@@ -232,11 +232,18 @@ class Server:
             objects contained therein -- to a ROS2 graph.
         """
         
+        # Initialize callback shorthand.
+        def make_callback(method):
+            def callback(message):
+                method(key=message.data)
+                self._environment.update()
+            return callback
+            
         # Prepare keyword arguments for an object creation topic subscription.
         topic = f'initialize'
         kwargs = {**self.DEFAULT_TOPIC_PARAMETER_RECORD,
                   'topic': topic,
-                  'callback': lambda m: self.initialize_object(key=m.data),
+                  'callback': make_callback(self.initialize_object),
                   **self._topic_parameter_map.get(topic, {})}
         
         # Initialize topic shorthand.
@@ -250,7 +257,7 @@ class Server:
         topic = f'destroy'
         kwargs = {**self.DEFAULT_TOPIC_PARAMETER_RECORD,
                   'topic': topic,
-                  'callback': lambda m: self.destroy_object(key=m.data),
+                  'callback': make_callback(self.destroy_object),
                   **self._topic_parameter_map.get(topic, {})}
         
         # Initialize topic shorthand.
@@ -308,10 +315,17 @@ class Server:
         #        if (list(d) == ['data']) 
         #        else {f'{key}/{k}': v for (k, v) in d.items()}
         #    return d
-        make_callback \
-          = lambda k: lambda m: setattr(obj, k, to_value(to_dict(m)))
-          #= lambda k: lambda m: setattr(obj, k, to_dict(m))
-          #= lambda k: lambda m: obj.set(**to_dict(m))
+        #make_callback \
+        #  = lambda k: lambda m: setattr(obj, k, to_value(to_dict(m)))
+        #  #= lambda k: lambda m: setattr(obj, k, to_dict(m))
+        #  #= lambda k: lambda m: obj.set(**to_dict(m))
+        def make_callback(key):
+            def callback(message):
+                value = message_to_ordereddict(message)
+                value = value['data'] if (list(value) == ['data']) else value
+                setattr(obj, key, value)
+                self._environment.update() # !
+            return callback
         
         # Iterate through the object properties.
         for property_key in obj.object_properties:
