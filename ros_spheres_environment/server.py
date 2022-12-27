@@ -232,18 +232,18 @@ class Server:
             objects contained therein -- to a ROS2 graph.
         """
         
-        # Initialize callback shorthand.
-        def make_callback(method):
-            def callback(message):
-                method(key=message.data)
-                self._environment.update()
-            return callback
+        ## Initialize callback shorthand.
+        #def make_callback(method):
+        #    def callback(message):
+        #        method(key=message.data)
+        #        self._environment.update()
+        #    return callback
             
         # Prepare keyword arguments for an object creation topic subscription.
         topic = f'initialize'
         kwargs = {**self.DEFAULT_TOPIC_PARAMETER_RECORD,
                   'topic': topic,
-                  'callback': make_callback(self.initialize_object),
+                  'callback': lambda m: self.initialize_object(key=m.data), #make_callback(self.initialize_object),
                   **self._topic_parameter_map.get(topic, {})}
         
         # Initialize topic shorthand.
@@ -257,7 +257,7 @@ class Server:
         topic = f'destroy'
         kwargs = {**self.DEFAULT_TOPIC_PARAMETER_RECORD,
                   'topic': topic,
-                  'callback': make_callback(self.destroy_object),
+                  'callback': lambda m: self.destroy_object(key=m.data), #make_callback(self.destroy_object),
                   **self._topic_parameter_map.get(topic, {})}
         
         # Initialize topic shorthand.
@@ -348,6 +348,9 @@ class Server:
             self._subscription_map[topic] \
               = self.node.create_subscription(**kwargs)
         
+        # Update the environment.
+        self._environment.update()
+        
         # Return the initialized object.
         return obj
         
@@ -374,6 +377,9 @@ class Server:
         
         # Delete the object from the environment.
         del self._environment[key]
+        
+        # Update the environment.
+        self._environment.update()
     
     def __del__(self):
         """ Destructor. """
