@@ -11,6 +11,11 @@ relevant to modeling a environment in which spherical objects interact in a
 
 >>> environment = spheres_environment.Environment()
 
+Import the `pprint` package, for formatting the displayed state of the 
+environment.
+
+>>> import pprint
+
 Initialize a ROS2 interface.
 
 >>> import rclpy
@@ -56,7 +61,7 @@ client and server nodes must be spun. Spinning the client sends the ROS2
 message requesting object initialization. Spinning the server causes the 
 message to be processed on the remote end of the ROS2 topic.
 
->>> client.initialize_object('cursor')
+>>> cursor = client.initialize_object('cursor')
 >>> spin(client_node)
 >>> spin(server_node)
 
@@ -97,6 +102,29 @@ Test the subscription.
 >>> spin(server_node)
 >>> environment
 {'cursor': {'radius': 0.1, 'position': {'x': 0.1, 'y': -0.5, 'z': 1.0}}}
+
+Initialize a subscription for modifying the spherical cursor color. Round the 
+RGBA color values to seven decimel places, since the use of 32-bit floats by 
+the ROS ColorRGBA message can introduce numerical error that interferes with 
+the printed output in the next step.
+
+>>> def callback(msg):
+...     rgba = tuple(round(getattr(msg, k), 7) for k in ['r', 'g', 'b', 'a'])
+...     environment['cursor'].color = rgba
+>>> sub = server_node.create_subscription(msg_type=color_message,
+...                                       topic='cursor/color',
+...                                       callback=callback, 
+...                                       qos_profile=qos.SYSTEM_DEFAULT.value)
+
+Test the subscription.
+
+>>> client['cursor'].color = (-1, 0.99, 0.0, 10)
+>>> spin(client_node)
+>>> spin(server_node)
+>>> pprint.pp(environment)
+{'cursor': {'radius': 0.1,
+            'position': {'x': 0.1, 'y': -0.5, 'z': 1.0},
+            'color': {'r': 0.0, 'g': 0.99, 'b': 0.0, 'a': 1.0}}}
 
 Clean up the ROS2 nodes and shut down the ROS2 interface.
 
@@ -162,7 +190,9 @@ class Sphere(spheres_environment.Sphere):
         # Define a publisher record map.
         publisher_record_map \
           = dict(position=dict(msg_type=position_message),
-                 radius=dict(msg_type=radius_message))
+                 radius=dict(msg_type=radius_message),
+                 color=dict(msg_type=color_message),
+                 )
         
         # Iterate through object properties.
         for key in self.object_properties:
@@ -202,7 +232,9 @@ class Sphere(spheres_environment.Sphere):
         # Generate a mapping between object property keys and message 
         # generators.
         message_map = dict(radius=lambda v: radius_message(data=value),
-                           position=lambda v: position_message(**value))
+                           position=lambda v: position_message(**value),
+                           color=lambda v: color_message(**value),
+                          )
         
         # Publish the message.
         topic = f'{self.key}/{key}'

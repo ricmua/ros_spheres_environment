@@ -126,7 +126,7 @@ control to ROS2 in order to allow the client node to send the appropriate
 message, and then again to allow the server node to receive and process it.
 
 ```python
->>> client.initialize_object('cursor')
+>>> cursor = client.initialize_object('cursor')
 >>> spin(client_node)
 >>> spin(server_node)
 
@@ -156,6 +156,8 @@ mechanism for remotely querying parameter values.
 1.0
 >>> cursor.position
 {'x': 0.0, 'y': 0.0, 'z': 0.0}
+>>> cursor.color
+{'r': 0.0, 'g': 0.0, 'b': 0.0, 'a': 1.0}
 
 ```
 
@@ -179,11 +181,25 @@ Similarly modify the position of the sphere.
 
 ```
 
-Confirm that the changes have been effected in the virtual environment.
+Similarly modify the color of the sphere. Note that the [RGBA] color values are 
+constrained to the interval `[0.0, 1.0]`.
 
 ```
->>> environment
-{'cursor': {'radius': 0.1, 'position': {'x': 0.1, 'y': -0.5, 'z': 1.0}}}
+>>> client['cursor'].color = (-1, 1.0, 0, 10)
+>>> spin(client_node)
+>>> spin(server_node)
+
+```
+
+Confirm that the changes have been effected in the virtual environment. Use the 
+`pprint` package to display the state of the environment.
+
+```
+>>> import pprint
+>>> pprint.pp(environment)
+{'cursor': {'radius': 0.1,
+            'position': {'x': 0.1, 'y': -0.5, 'z': 1.0},
+            'color': {'r': 0.0, 'g': 1.0, 'b': 0.0, 'a': 1.0}}}
 
 ```
 

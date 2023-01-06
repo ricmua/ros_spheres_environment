@@ -14,4 +14,5 @@ from geometry_msgs.msg import Point as position_message
 from example_interfaces.msg import Float64 as radius_message
 from example_interfaces.msg import String as spawn_message
 from example_interfaces.msg import Float32 as default_message
+from std_msgs.msg import ColorRGBA as color_message
 

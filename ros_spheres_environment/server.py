@@ -36,7 +36,8 @@ been updated.
 >>> #from example_interfaces.msg import Float64 as radius_message
 >>> topic_parameter_map \\
 ...   = {'cursor/position': dict(msg_type=position_message),
-...      'cursor/radius': dict(msg_type=radius_message)}
+...      'cursor/radius': dict(msg_type=radius_message),
+...      'cursor/color': dict(msg_type=color_message)}
 
 >>> server = Server(node=node, 
 ...                 environment=environment)#, 
@@ -59,7 +60,7 @@ been updated.
 >>> environment
 {'cursor': {}}
 >>> environment['cursor'].object_properties
-['position', 'radius']
+['color', 'position', 'radius']
 
 >>> publisher_map = {}
 >>> topic = 'cursor/position'
@@ -142,7 +143,9 @@ class Server:
     """
     
     DEFAULT_PROPERTY_MESSAGE_MAP = dict(position=position_message,
-                                        radius=radius_message)
+                                        radius=radius_message,
+                                        color=color_message,
+                                       )
     """ Mapping from a spheres environment object property key to a ROS2 
         message type. Used for preparing arguments to 
         `rclpy.node.Node.create_publisher` or 
