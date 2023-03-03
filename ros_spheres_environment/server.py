@@ -246,7 +246,8 @@ class Server:
         topic = f'initialize'
         kwargs = {**self.DEFAULT_TOPIC_PARAMETER_RECORD,
                   'topic': topic,
-                  'callback': lambda m: self.initialize_object(key=m.data), #make_callback(self.initialize_object),
+                  'callback': lambda m: self.initialize_object(key=m.data),
+                   #make_callback(self.initialize_object),
                   **self._topic_parameter_map.get(topic, {})}
         
         # Initialize topic shorthand.
@@ -260,7 +261,8 @@ class Server:
         topic = f'destroy'
         kwargs = {**self.DEFAULT_TOPIC_PARAMETER_RECORD,
                   'topic': topic,
-                  'callback': lambda m: self.destroy_object(key=m.data), #make_callback(self.destroy_object),
+                  'callback': lambda m: self.destroy_object(key=m.data),
+                   #make_callback(self.destroy_object),
                   **self._topic_parameter_map.get(topic, {})}
         
         # Initialize topic shorthand.
@@ -327,7 +329,10 @@ class Server:
                 value = message_to_ordereddict(message)
                 value = value['data'] if (list(value) == ['data']) else value
                 setattr(obj, key, value)
-                self._environment.update() # !
+                
+                # Invoke the common callback.
+                self._object_property_callback()
+                
             return callback
         
         # Iterate through the object properties.
@@ -356,6 +361,17 @@ class Server:
         
         # Return the initialized object.
         return obj
+        
+    def _object_property_callback(self):
+        """ Callback invoked each time a property of an object in the 
+            environment is updated via ROS2 message.
+        """
+        
+        # This is necessary to update the environment each time an 
+        # object is modified.
+        # But it CAN cause conflicts if updates are invoked elsewhere.
+        # It is important to consider this carefully.
+        #self._environment.update() # !
         
     def destroy_object(self, key):
         """ Remove an object from the environment. """
