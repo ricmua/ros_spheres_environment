@@ -356,8 +356,8 @@ class Server:
             self._subscription_map[topic] \
               = self.node.create_subscription(**kwargs)
         
-        # Update the environment.
-        self._environment.update()
+        ## Update the environment.
+        #self._environment.update()
         
         # Return the initialized object.
         return obj
@@ -397,8 +397,8 @@ class Server:
         # Delete the object from the environment.
         del self._environment[key]
         
-        # Update the environment.
-        self._environment.update()
+        ## Update the environment.
+        #self._environment.update()
     
     def __del__(self):
         """ Destructor. """

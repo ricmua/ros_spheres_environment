@@ -134,7 +134,7 @@ Clean up the ROS2 nodes and shut down the ROS2 interface.
 
 """
 
-# Copyright 2022 Carnegie Mellon University Neuromechatronics Lab (a.whit)
+# Copyright 2022-2023 Carnegie Mellon University Neuromechatronics Lab (a.whit)
 # 
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
